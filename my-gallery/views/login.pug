@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Login Page
+  body
+    h1 Login
+    form(action="http://localhost:3001/login", method="post")
+      label(for="username") Username:
+      input(type="text", name="username", id="username")
+      label(for="password") Password:
+      input(type="password", name="password", id="password")
+      button(type="submit") Login

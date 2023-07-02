@@ -1,0 +1,93 @@
+doctype html
+html
+  head
+    title Image Gallery
+  body
+    include header.pug
+
+    div(style={ display: 'flex', flexDirection: 'row' })
+      div#col1(style={ flex: '60%' })
+        h1 Image Gallery
+        each image in images
+          div(key=image.name)
+            img(src=image.url, alt='Uploaded')
+            button(onClick=`handleDelete('${image.name}')`) Delete
+      div#col2(style={ flex: '40%' })
+        h1 Upload Image
+        h4 Please fill out the following form and press the upload button
+        form(action='/upload', method='post', enctype='multipart/form-data')
+          input(type='file', name='image', accept='image/*', id='fileInput')
+          button(type='submit', disabled=true, id='uploadBtn') Upload
+    
+    include footer.pug
+
+    script.
+      const fileInput = document.getElementById('fileInput');
+      const uploadBtn = document.getElementById('uploadBtn');
+      fileInput.addEventListener('change', handleFileSelect);
+
+      function handleFileSelect() {
+        const files = fileInput.files;
+        const file = files[0];
+        if (file) {
+          selectedFile = file;
+          uploadBtn.disabled = false;
+        } else {
+          selectedFile = null;
+          uploadBtn.disabled = true;
+        }
+      }
+
+      function handleDelete(filename) {
+        fetch(`http://localhost:3001/images/${filename}`, { method: 'DELETE' })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.message);
+            // Perform any additional UI updates as needed
+            const deletedImageDiv = document.querySelector(`div[key="${filename}"]`);
+            if (deletedImageDiv) {
+              deletedImageDiv.remove();
+            }
+          })
+          .catch(error => console.log(error));
+      }
+
+      // Submit the form and handle the upload response
+      document.querySelector('form').addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetch('/upload', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => response.json())
+          .then(handleUploadResponse)
+          .catch(error => console.log(error));
+      });
+
+
+      // Function to handle the response after uploading an image
+      function handleUploadResponse(response) {
+        if (response.url) {
+          // Update the gallery by adding the newly uploaded image to the DOM
+          const galleryDiv = document.getElementById('col1');
+          const newImageDiv = document.createElement('div');
+          const filename = response.name; // Store the filename separately
+          newImageDiv.setAttribute('key', filename);
+          const newImage = document.createElement('img');
+          newImage.src = response.url;
+          newImage.alt = 'Uploaded';
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.addEventListener('click', () => handleDelete(filename)); // Pass the filename to handleDelete
+          newImageDiv.appendChild(newImage);
+          newImageDiv.appendChild(deleteButton);
+          galleryDiv.appendChild(newImageDiv);
+          // Reset the file input and disable the upload button
+          fileInput.value = '';
+          uploadBtn.disabled = true;
+        } else {
+          console.log('Upload failed');
+        }
+      }
+      

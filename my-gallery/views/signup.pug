@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Signup Page
+  body
+    h1 Signup
+    form(action="http://localhost:3001/signup", method="post")
+      label(for="username") Username:
+      input(type="text", name="username", id="username")
+      label(for="password") Password:
+      input(type="password", name="password", id="password")
+      button(type="submit") Signup

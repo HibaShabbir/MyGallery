@@ -1,0 +1,38 @@
+script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+title Color Changing Div
+style.
+  
+  #color-changing-div {
+        width: 200px;
+        height: 200px;
+        background-color: red;
+      }
+      #clock {
+        font-size: 48px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+  
+#color-changing-div
+#clock
+script.
+  
+  $(document).ready(function() {
+    function updateClock() {
+      const clock = $('#clock');
+      const now = new Date();
+  
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+  
+      const timeString = `${hours}:${minutes}:${seconds}`;
+      clock.text(timeString);
+    }
+  
+    // Update the clock immediately and every second
+    updateClock();
+    setInterval(updateClock, 1000);
+  });
+  
+
